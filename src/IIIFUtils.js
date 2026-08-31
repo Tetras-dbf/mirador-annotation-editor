@@ -452,13 +452,20 @@ export const isEmptyValue = (value) => {
  */
 export const getDefaultValue = () => `${new Date().toLocaleString()}`;
 
+/** templateTypes with a Konva-drawn spatial target, i.e. every template except IIIF_TYPE */
+const SPATIAL_TARGET_TEMPLATE_TYPES = [
+  TEMPLATE.TAGGING_TYPE, TEMPLATE.TEXT_TYPE, TEMPLATE.MULTIPLE_BODY_TYPE,
+];
+
 /**
  * Shared, template-agnostic tail end of "convert annotationState to be saved": strips
- * maeData.target down to its known keys, captures an SVG snapshot of any drawn shapes,
- * computes the target's scale, derives the saved `target` (a xywh string or an SVG/Fragment
- * selector), and stringifies drawingState for storage. Every template with a spatial target
- * (i.e. every template except IIIF_TYPE, which returns its annotationState unchanged before
- * reaching this point) shares this exact pipeline - only what happens to `.body`/`.maeData.tags`
+ * maeData.target down to its known keys, captures an SVG snapshot of any drawn shapes (for a
+ * known spatial-target templateType only - see SPATIAL_TARGET_TEMPLATE_TYPES; this matters
+ * because convertAnnotationStateToBeSaved can also reach here as AnnotationForm.jsx's fallback
+ * for a templateType the registry doesn't recognize, and that isn't necessarily a Konva-shaped
+ * drawingState), computes the target's scale, derives the saved `target` (a xywh string or an
+ * SVG/Fragment selector), and stringifies drawingState for storage. Every template with a
+ * spatial target shares this exact pipeline - only what happens to `.body`/`.maeData.tags`
  * before calling this is template-specific.
  * @param {object} annotationState
  * @param {object} canvas
@@ -485,7 +492,10 @@ export const finalizeSpatialTarget = async (
 
   console.info('Annotation state target', annotationStateForSaving.maeData.target);
 
-  if (annotationStateForSaving.maeData.target.drawingState.shapes.length > 0) {
+  if (
+    SPATIAL_TARGET_TEMPLATE_TYPES.includes(annotationStateForSaving.maeData.templateType)
+      && annotationStateForSaving.maeData.target.drawingState.shapes.length > 0
+  ) {
     annotationStateForSaving.maeData.target.svg = await getSvg(windowId);
   }
 
@@ -538,12 +548,44 @@ export const convertSingleBodyAnnotationToBeSaved = async (
 };
 
 /**
+ * Shared MULTIPLE_BODY_TYPE-specific step: default an empty maeData.textBody.value, then build
+ * the saved `body` array from textBody + tags. Used by both
+ * convertMultipleBodyAnnotationToBeSaved (MultipleBodyTemplate.jsx, the real path) and
+ * convertAnnotationStateToBeSaved's own MULTIPLE_BODY_TYPE branch below (AnnotationForm.jsx's
+ * fallback for an unrecognized templateType) so the two can't silently diverge.
+ * @param {object} state
+ * @returns {object} the same state, mutated
+ */
+export const applyMultipleBodyConversion = (state) => {
+  const stateToSave = state;
+  if (
+    stateToSave.maeData?.textBody
+      && isEmptyValue(stateToSave.maeData.textBody.value)
+  ) {
+    stateToSave.maeData.textBody.value = getDefaultValue();
+  }
+  stateToSave.body = [stateToSave.maeData.textBody];
+  stateToSave.body.push(...stateToSave.maeData.tags.map((tag) => ({
+    id: tag.value,
+    purpose: 'tagging',
+    type: 'TextualBody',
+    value: tag.value,
+  })));
+  return stateToSave;
+};
+
+/**
  * Convert annotation state to be saved. Function change the annotationState object
  *
- * NOTE: handles MULTIPLE_BODY_TYPE only now. TAGGING_TYPE and TEXT_TYPE have their own
- * convertTaggingAnnotationToBeSaved/convertTextCommentAnnotationToBeSaved (see
- * TaggingTemplate.jsx/TextCommentTemplate.jsx) - steps of the per-template conversion-logic
- * migration described in tetras-dfb/root_repo#12.
+ * NOTE: as of Phase 2d of the per-template conversion-logic migration described in
+ * tetras-dfb/root_repo#12, every templateType in templateRegistry.jsx owns its own
+ * convertToAnnotation (see convertTaggingAnnotationToBeSaved/
+ * convertTextCommentAnnotationToBeSaved/convertIIIFAnnotationToBeSaved/
+ * convertMultipleBodyAnnotationToBeSaved), so this function is no longer used by any registry
+ * entry. It is kept only as AnnotationForm.jsx's fallback for a templateType the registry
+ * doesn't recognize (e.g. corrupted/legacy data) - see the registryEntry ?? fallback in
+ * saveAnnotation. Behavior is otherwise unchanged from before Phase 2 and is still
+ * characterized directly by IIIFUtils.test.js.
  * @param annotationState
  * @param canvas
  * @param windowId
@@ -570,21 +612,13 @@ export const convertAnnotationStateToBeSaved = async (
     annotationStateForSaving.body.value = getDefaultValue();
   }
 
-  if (
+  if (annotationStateForSaving.maeData.templateType === TEMPLATE.MULTIPLE_BODY_TYPE) {
+    applyMultipleBodyConversion(annotationStateForSaving);
+  } else if (
     annotationStateForSaving.maeData?.textBody
       && isEmptyValue(annotationStateForSaving.maeData.textBody.value)
   ) {
     annotationStateForSaving.maeData.textBody.value = getDefaultValue();
-  }
-
-  if (annotationStateForSaving.maeData.templateType === TEMPLATE.MULTIPLE_BODY_TYPE) {
-    annotationStateForSaving.body = [annotationState.maeData.textBody];
-    annotationStateForSaving.body.push(...annotationState.maeData.tags.map((tag) => ({
-      id: tag.value,
-      purpose: 'tagging',
-      type: 'TextualBody',
-      value: tag.value,
-    })));
   }
 
   return finalizeSpatialTarget(annotationStateForSaving, canvas, windowId, playerReferences);
