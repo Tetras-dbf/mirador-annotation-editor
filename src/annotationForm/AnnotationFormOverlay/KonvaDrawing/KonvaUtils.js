@@ -197,6 +197,7 @@ export const defaultLineWeightChoices = [0, 2, 5, 10, 20, 50];
 export const KONVA_MODE = {
   DRAW: 'draw',
   IMAGE: 'image',
+  POI: 'poi',
   TARGET: 'target',
 };
 
@@ -215,10 +216,37 @@ export const SHAPES_TOOL = {
   ELLIPSE: 'ellipse',
   FREEHAND: 'freehand',
   IMAGE: 'image',
+  POI: 'poi',
   POLYGON: 'polygon',
   RECTANGLE: 'rectangle',
   SHAPES: 'shapes',
 };
+
+/**
+ * Fixed, non-configurable appearance for the POI marker shape
+ * (tetras-dbf/mirador-annotation-editor#21): a POI has no color/style options, unlike every
+ * other drawable shape - this is deliberately not read from toolState anywhere.
+ */
+export const POI_MARKER_STYLE = {
+  fill: '#e53935',
+  stroke: '#ffffff',
+  strokeWidth: 2,
+};
+
+/**
+ * Radius for a newly-placed POI marker, proportional to the media's true size so it stays
+ * visible on both small and very large images, clamped to a sane range.
+ * @param {number} mediaTrueWidth
+ * @param {number} mediaTrueHeight
+ * @returns {number}
+ */
+export function getPoiMarkerRadius(mediaTrueWidth, mediaTrueHeight) {
+  const smallerDimension = Math.min(mediaTrueWidth, mediaTrueHeight);
+  // Math.max/Math.min propagate NaN, so an unset/zero media dimension (e.g. clicked before the
+  // media has fully loaded) would otherwise silently produce an invisible, NaN-radius marker.
+  if (!Number.isFinite(smallerDimension) || smallerDimension <= 0) return 10;
+  return Math.min(40, Math.max(6, smallerDimension * 0.015));
+}
 
 /** Check if the active tool is a shape tool */
 export function isShapesTool(activeTool) {

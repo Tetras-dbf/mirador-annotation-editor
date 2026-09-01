@@ -10,10 +10,11 @@ import POITemplate, {
 import { TARGET_TOOL_STATE } from '../src/annotationForm/AnnotationFormUtils';
 import { SHAPES_TOOL } from '../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 
-// tetras-dbf/mirador-annotation-editor#4: the POI template's target must be exactly one drawn
-// Circle shape (see docs/superpowers/specs/2026-09-01-poi-iiif-annotation-format-design.md in
-// root_repo), so getSvg is mocked the same way MultipleBodyTemplate.test.js mocks it, to keep
-// these tests independent of react-konva-to-svg's actual serialization.
+// tetras-dbf/mirador-annotation-editor#4/#21: the POI template's target must be exactly one
+// placed POI marker (SHAPES_TOOL.POI, the dedicated click-to-place tool - see
+// docs/superpowers/specs/2026-09-01-poi-iiif-annotation-format-design.md in root_repo), so
+// getSvg is mocked the same way MultipleBodyTemplate.test.js mocks it, to keep these tests
+// independent of react-konva-to-svg's actual serialization.
 vi.mock('../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils', async () => {
   const actual = await vi.importActual('../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils');
   return {
@@ -22,7 +23,22 @@ vi.mock('../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils', a
   };
 });
 
-/** A single Circle shape, as drawn by the target toolbar's Circle tool */
+/** A single POI marker, as placed by the dedicated POI tool (see PoiNode.jsx) */
+const poiShape = () => ({
+  fill: '#e53935',
+  id: 'shape-1',
+  radius: 10,
+  rotation: 0,
+  scaleX: 1,
+  scaleY: 1,
+  stroke: '#ffffff',
+  strokeWidth: 2,
+  type: SHAPES_TOOL.POI,
+  x: 10,
+  y: 20,
+});
+
+/** A single Circle shape (the old, now-removed generic Circle tool) - no longer a valid target */
 const circleShape = () => ({
   fill: TARGET_TOOL_STATE.fillColor,
   fillColor: TARGET_TOOL_STATE.fillColor,
@@ -72,7 +88,7 @@ const basePoiState = () => ({
   maeData: {
     descriptionItems: [],
     target: {
-      drawingState: { shapes: [circleShape()] },
+      drawingState: { shapes: [poiShape()] },
       fullCanvaXYWH: '0,0,800,600',
     },
     templateType: 'poi',
@@ -83,13 +99,18 @@ const basePoiState = () => ({
 });
 
 describe('isValidPointTarget', () => {
-  it('is true for exactly one Circle shape', () => {
-    const maeData = { target: { drawingState: { shapes: [circleShape()] } } };
+  it('is true for exactly one POI marker', () => {
+    const maeData = { target: { drawingState: { shapes: [poiShape()] } } };
     expect(isValidPointTarget(maeData)).toBe(true);
   });
 
   it('is false with no shapes', () => {
     const maeData = { target: { drawingState: { shapes: [] } } };
+    expect(isValidPointTarget(maeData)).toBe(false);
+  });
+
+  it('is false with a Circle shape - the old generic Circle tool is no longer a valid POI target (#21)', () => {
+    const maeData = { target: { drawingState: { shapes: [circleShape()] } } };
     expect(isValidPointTarget(maeData)).toBe(false);
   });
 
@@ -99,7 +120,7 @@ describe('isValidPointTarget', () => {
   });
 
   it('is false with more than one shape', () => {
-    const shapes = [circleShape(), circleShape()];
+    const shapes = [poiShape(), poiShape()];
     expect(isValidPointTarget({ target: { drawingState: { shapes } } })).toBe(false);
   });
 });
@@ -155,7 +176,7 @@ describe('applyPoiBodyConversion', () => {
 });
 
 describe('convertPoiAnnotationToBeSaved', () => {
-  it('preserves motivation and dbf:kind, and derives target from the drawn circle', async () => {
+  it('preserves motivation and dbf:kind, and derives target from the placed POI marker', async () => {
     const state = basePoiState();
 
     const result = await convertPoiAnnotationToBeSaved(
@@ -225,7 +246,7 @@ describe('POITemplate (render)', () => {
       'dbf:kind': 'POI',
       id: 'canvas1/annotation/1',
       maeData: {
-        target: { drawingState: JSON.stringify({ shapes: [circleShape()] }) },
+        target: { drawingState: JSON.stringify({ shapes: [poiShape()] }) },
         templateType: 'poi',
       },
       motivation: 'identifying',

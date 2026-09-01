@@ -6,7 +6,9 @@ import PropTypes from 'prop-types';
 import { Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import ParentComponent from './KonvaDrawing/shapes/ParentComponent';
-import { KONVA_MODE, OVERLAY_TOOL, SHAPES_TOOL } from './KonvaDrawing/KonvaUtils';
+import {
+  getPoiMarkerRadius, KONVA_MODE, OVERLAY_TOOL, POI_MARKER_STYLE, SHAPES_TOOL,
+} from './KonvaDrawing/KonvaUtils';
 
 /** All the stuff to draw on the canvas */
 export default function AnnotationDrawing(
@@ -156,7 +158,15 @@ export default function AnnotationDrawing(
   useEffect(() => {
     // Perform an action when fillColor, strokeColor, or strokeWidth change
     // update current shape
-    if (drawingState.currentShape && displayMode !== KONVA_MODE.TARGET) {
+    // KONVA_MODE.POI is excluded the same way KONVA_MODE.TARGET is: POI_MARKER_STYLE is fixed,
+    // never read from toolState, so syncing toolState's (undefined) colors onto a placed POI
+    // marker would corrupt it - concretely, on every reload of an existing POI, since the
+    // persisted drawingState.currentShape is non-null and this effect always runs once on mount.
+    if (
+      drawingState.currentShape
+      && displayMode !== KONVA_MODE.TARGET
+      && displayMode !== KONVA_MODE.POI
+    ) {
       // eslint-disable-next-line no-param-reassign
       drawingState.currentShape.fill = toolState.fillColor;
       // eslint-disable-next-line no-param-reassign
@@ -289,6 +299,7 @@ export default function AnnotationDrawing(
       SHAPES_TOOL.POLYGON,
       SHAPES_TOOL.ARROW,
       SHAPES_TOOL.FREEHAND,
+      SHAPES_TOOL.POI,
     ];
 
     if (crosshairTools.includes(activeTool)) {
@@ -300,12 +311,37 @@ export default function AnnotationDrawing(
   /** */
   const handleMouseDown = (e) => {
     try {
-      const pos = e.target.getStage()
-        .getRelativePointerPosition();
+      const stage = e.target.getStage();
+      const pos = stage.getRelativePointerPosition();
       pos.x /= scale;
       pos.y /= scale;
       let shape = null;
       switch (toolState.activeTool) {
+        case SHAPES_TOOL.POI:
+          // A POI target is always exactly one point: clicking the existing marker starts a
+          // native Konva drag (handled by PoiNode's draggable prop) instead of replacing it -
+          // only a click on empty canvas places/moves the marker here.
+          if (e.target !== stage) break;
+          shape = {
+            ...POI_MARKER_STYLE,
+            id: uuidv4(),
+            radius: getPoiMarkerRadius(
+              playerReferences.getMediaTrueWidth(),
+              playerReferences.getMediaTrueHeight(),
+            ),
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+            type: toolState.activeTool,
+            x: pos.x,
+            y: pos.y,
+          };
+          setDrawingState({
+            currentShape: shape,
+            isDrawing: false,
+            shapes: [shape],
+          });
+          break;
         case SHAPES_TOOL.RECTANGLE:
           shape = {
             fill: toolState.fillColor,
