@@ -9,6 +9,7 @@ import Polygon from './Polygon';
 import Freehand from './Freehand';
 import ImageShape from './ImageShape';
 import CircleNode from './CircleNode';
+import PoiNode from './PoiNode';
 import { OVERLAY_TOOL, SHAPES_TOOL } from '../KonvaUtils';
 
 /** Loads Konva and display in function of their type */
@@ -120,6 +121,18 @@ function ParentComponent({
                 key={shape.id}
                 displayMode={displayMode}
                 baseStrokeWidth={baseStrokeWidth}
+              />
+            );
+          case SHAPES_TOOL.POI:
+            return (
+              <PoiNode
+                {...{
+                  handleDragEnd,
+                  handleDragStart,
+                  onShapeClick: handleShapeClick,
+                  shape,
+                }}
+                key={shape.id}
               />
             );
           case SHAPES_TOOL.FREEHAND:

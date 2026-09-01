@@ -4,11 +4,15 @@ import { Grid, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MEDIA_TYPES } from '../../AnnotationFormUtils';
 import { TargetSpatialInput } from './TargetSpatialInput';
+import { TargetPointInput } from './TargetPointInput';
 
 /**
  * Section of Time and Space Target
  * @param onChangeTarget
  * @param spatialTarget
+ * @param pointOnly - when true, restrict target capture to a single click-to-place point (no
+ *   shape toolbar, no style panel) via TargetPointInput instead of the full TargetSpatialInput -
+ *   see tetras-dbf/mirador-annotation-editor#21
  * @param playerReferences
  * @param target
  * @param windowId
@@ -18,6 +22,7 @@ import { TargetSpatialInput } from './TargetSpatialInput';
 export default function TargetFormSection({
   onChangeTarget,
   spatialTarget,
+  pointOnly,
   playerReferences,
   target,
   windowId,
@@ -69,12 +74,21 @@ export default function TargetFormSection({
 
       {spatialTarget && mediaType !== MEDIA_TYPES.AUDIO && (
         <Grid container direction="column">
-          <TargetSpatialInput
-            playerReferences={playerReferences}
-            setTargetDrawingState={onChangeTargetInput}
-            targetDrawingState={defaultTarget.drawingState}
-            windowId={windowId}
-          />
+          {pointOnly ? (
+            <TargetPointInput
+              playerReferences={playerReferences}
+              setTargetDrawingState={onChangeTargetInput}
+              targetDrawingState={defaultTarget.drawingState}
+              windowId={windowId}
+            />
+          ) : (
+            <TargetSpatialInput
+              playerReferences={playerReferences}
+              setTargetDrawingState={onChangeTargetInput}
+              targetDrawingState={defaultTarget.drawingState}
+              windowId={windowId}
+            />
+          )}
         </Grid>
       )}
     </Grid>
@@ -84,7 +98,12 @@ export default function TargetFormSection({
 TargetFormSection.propTypes = {
   onChangeTarget: PropTypes.func.isRequired,
   playerReferences: PropTypes.object.isRequired,
+  pointOnly: PropTypes.bool,
   spatialTarget: PropTypes.bool.isRequired,
   target: PropTypes.object, // allow undefined/null; child will hydrate once
   windowId: PropTypes.string.isRequired,
+};
+
+TargetFormSection.defaultProps = {
+  pointOnly: false,
 };

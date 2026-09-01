@@ -32,11 +32,12 @@ export const DESCRIPTION_ITEM_TYPES = {
 };
 
 /**
- * A POI's spatial target must be exactly one drawn Circle shape - not a rectangle, polygon, or
- * multiple shapes - so it round-trips as a single point (see
- * docs/superpowers/specs/2026-09-01-poi-iiif-annotation-format-design.md in root_repo). The
- * spatial-target toolbar itself still offers Rectangle/Circle/Polygon (TargetFormSection has no
- * shape-restriction prop), so this is enforced here instead, at save time.
+ * A POI's spatial target must be exactly one placed POI marker (SHAPES_TOOL.POI, tetras-dbf/
+ * mirador-annotation-editor#21's dedicated click-to-place tool - no shared toolbar, no style
+ * options, no resize). TargetFormSection's `pointOnly` mode makes drawing anything else
+ * structurally impossible in normal use, but this still guards two real cases: no point has been
+ * placed yet (drawingState.shapes is empty), and an annotation loaded from outside MAE (see the
+ * KNOWN LIMITATION below).
  *
  * KNOWN LIMITATION (not yet reachable - no producer of maeData-less POI annotations exists until
  * strapi-plugins#10 ships): IIIFUtils.js's convertSvgSelectorToMae reconstructs ANY SvgSelector,
@@ -50,7 +51,7 @@ export const DESCRIPTION_ITEM_TYPES = {
  */
 export const isValidPointTarget = (maeData) => {
   const shapes = maeData?.target?.drawingState?.shapes;
-  return Array.isArray(shapes) && shapes.length === 1 && shapes[0].type === SHAPES_TOOL.CIRCLE;
+  return Array.isArray(shapes) && shapes.length === 1 && shapes[0].type === SHAPES_TOOL.POI;
 };
 
 /**
@@ -131,9 +132,13 @@ export default function POITemplate(
     };
   } else {
     if (maeAnnotation.maeData.target.drawingState && typeof maeAnnotation.maeData.target.drawingState === 'string') {
-      maeAnnotation.maeData.target.drawingState = JSON.parse(
-        maeAnnotation.maeData.target.drawingState,
-      );
+      // currentShape is cleared on load (matching MultipleBodyTemplate's pattern): it was only
+      // ever meaningful as transient in-session UI selection state, and a stale one - left over
+      // from the last save - would otherwise mark the marker as "already selected" from mount.
+      maeAnnotation.maeData.target.drawingState = {
+        ...JSON.parse(maeAnnotation.maeData.target.drawingState),
+        currentShape: null,
+      };
     }
     maeAnnotation.maeData.title = maeAnnotation.body
       .find((body) => body.purpose === 'identifying')?.value ?? '';
@@ -314,6 +319,7 @@ export default function POITemplate(
         <TargetFormSection
           onChangeTarget={updateTargetState}
           playerReferences={playerReferences}
+          pointOnly
           spatialTarget
           target={annotationState.maeData.target}
           windowId={windowId}
