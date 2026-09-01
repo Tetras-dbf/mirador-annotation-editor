@@ -6,6 +6,7 @@ import { OVERLAY_TOOL } from './AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 export const TEMPLATE = {
   IIIF_TYPE: 'iiif',
   MULTIPLE_BODY_TYPE: 'multiple_body',
+  POI_TYPE: 'poi',
   TAGGING_TYPE: 'tagging',
   TEXT_TYPE: 'text',
 };
@@ -14,6 +15,7 @@ export const TEMPLATE = {
 export const DEFAULT_FORM_MAP = {
   expert: TEMPLATE.IIIF_TYPE,
   note: TEMPLATE.MULTIPLE_BODY_TYPE,
+  poi: TEMPLATE.POI_TYPE,
   tag: TEMPLATE.TAGGING_TYPE,
 };
 

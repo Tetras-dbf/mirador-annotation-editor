@@ -1,9 +1,11 @@
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import DataObjectIcon from '@mui/icons-material/DataObject';
+import PlaceIcon from '@mui/icons-material/Place';
 import React from 'react';
 import IIIFTemplate, { convertIIIFAnnotationToBeSaved } from './builtin/IIIFTemplate';
 import MultipleBodyTemplate, { convertMultipleBodyAnnotationToBeSaved } from './builtin/MultipleBodyTemplate';
+import POITemplate, { convertPoiAnnotationToBeSaved } from './builtin/POITemplate';
 import TaggingTemplate, { convertTaggingAnnotationToBeSaved } from './builtin/TaggingTemplate';
 import TextCommentTemplate, { convertTextCommentAnnotationToBeSaved } from './builtin/TextCommentTemplate';
 import { MEDIA_TYPES, TEMPLATE } from '../AnnotationFormUtils';
@@ -66,6 +68,16 @@ export const TEMPLATE_REGISTRY = (t, externalTemplates = []) => {
       id: TEMPLATE.TAGGING_TYPE,
       isCompatibleWithMediaType: imageOnly,
       label: t('tag'),
+      selectable: true,
+    },
+    {
+      Component: POITemplate,
+      convertToAnnotation: convertPoiAnnotationToBeSaved,
+      description: t('poi_description'),
+      icon: <PlaceIcon fontSize="small" />,
+      id: TEMPLATE.POI_TYPE,
+      isCompatibleWithMediaType: imageOnly,
+      label: t('poi'),
       selectable: true,
     },
     {

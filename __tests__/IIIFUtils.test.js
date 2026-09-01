@@ -333,6 +333,16 @@ describe('convertIIIFAnnoToMaeData', () => {
     expect(convertIIIFAnnoToMaeData(anno).maeData.templateType).toBe(TEMPLATE.TAGGING_TYPE);
   });
 
+  it('derives POI_TYPE from the dbf:kind marker, even though motivation is not "tagging" (tetras-dbf/mirador-annotation-editor#4: a POI created outside MAE must still open under POITemplate, not silently fall through to MULTIPLE_BODY_TYPE)', () => {
+    const anno = {
+      'dbf:kind': 'POI',
+      motivation: 'identifying',
+      target: { selector: { type: 'FragmentSelector', value: 'xywh=1,2,3,4' } },
+    };
+
+    expect(convertIIIFAnnoToMaeData(anno).maeData.templateType).toBe(TEMPLATE.POI_TYPE);
+  });
+
   it('derives MULTIPLE_BODY_TYPE from `bodyValue`, forcing purpose to "describing"', () => {
     const anno = { bodyValue: 'legacy comment', target: { selector: { type: 'FragmentSelector', value: 'xywh=1,2,3,4' } } };
 
