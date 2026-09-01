@@ -70,8 +70,8 @@ const config = {
     sideBarOpenByDefault: true,
   },
   windows: [
-    { manifestId: 'https://iiif.harvardartmuseums.org/manifests/object/299843' }
-  ]
+    { manifestId: "https://resources.mirador-multi-user.com/f676f10ea711a0a00f14cce0667aec5e1458b5ff/Map-of-the-Nile-River-and-surrounding-areas.json" }
+  ],
 };
 
 Mirador.viewer(config, [...annotationPlugins]);
