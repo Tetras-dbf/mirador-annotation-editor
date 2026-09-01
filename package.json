@@ -62,7 +62,7 @@
     "html-loader": "^5.0.0",
     "json-edit-react": "^1.22.2",
     "react-color": "^2.19.3",
-    "react-konva": "^19.2.3",
+    "react-konva": "^18.2.10",
     "react-konva-to-svg": "^1.0.2",
     "react-quill": "npm:react-quill-new@3.8.3",
     "react-redux": "^9.2.0",
@@ -85,8 +85,8 @@
     "lodash": "^4.17.23",
     "mirador": "^4.2.3",
     "prop-types": "^15.7.2",
-    "react": ">=19",
-    "react-dom": ">=19",
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0",
     "react-i18next": ">=15"
   },
   "devDependencies": {
