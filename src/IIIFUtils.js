@@ -579,6 +579,7 @@ export const applyMultipleBodyConversion = (state) => {
  * Convert annotation state to be saved. Function change the annotationState object
  *
  * NOTE: as of Phase 2d of the per-template conversion-logic migration described in
+ * tetras-dbf/root_repo#12, every templateType in annotationForm/templates/registry.jsx owns its own
  * tetras-dbf/root_repo#12, every templateType in templateRegistry.jsx owns its own
  * convertToAnnotation (see convertTaggingAnnotationToBeSaved/
  * convertTextCommentAnnotationToBeSaved/convertIIIFAnnotationToBeSaved/
