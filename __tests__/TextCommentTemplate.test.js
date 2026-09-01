@@ -3,7 +3,7 @@ import { isEmptyValue } from '../src/IIIFUtils';
 import { TARGET_TOOL_STATE } from '../src/annotationForm/AnnotationFormUtils';
 import { SHAPES_TOOL } from '../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 
-// Regression tests for issue #12 Phase 2b (tetras-dfb/root_repo#12): TextCommentTemplate is the
+// Regression tests for issue #12 Phase 2b (tetras-dbf/root_repo#12): TextCommentTemplate is the
 // second template to get its own convertToAnnotation, extracted out of IIIFUtils.js's
 // convertAnnotationStateToBeSaved. Mirrors TaggingTemplate.test.js - same shape (a single
 // body.value, no tags/textBody) - pinned against the same TEXT_TYPE cases already

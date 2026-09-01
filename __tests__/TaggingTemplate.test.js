@@ -3,7 +3,7 @@ import { isEmptyValue } from '../src/IIIFUtils';
 import { TARGET_TOOL_STATE } from '../src/annotationForm/AnnotationFormUtils';
 import { SHAPES_TOOL } from '../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 
-// Regression tests for issue #12 Phase 2a (tetras-dfb/root_repo#12): TaggingTemplate is the first
+// Regression tests for issue #12 Phase 2a (tetras-dbf/root_repo#12): TaggingTemplate is the first
 // template to get its own convertToAnnotation, extracted out of IIIFUtils.js's
 // convertAnnotationStateToBeSaved. These pin down that the extraction is behavior-preserving
 // against the TAGGING_TYPE cases already characterized in IIIFUtils.test.js.

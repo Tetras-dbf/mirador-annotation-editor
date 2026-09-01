@@ -20,7 +20,7 @@ export const convertTextCommentAnnotationToBeSaved = convertSingleBodyAnnotation
 
 // This template is only kept for backward compatibility, it will be removed in the future.
 // Use MultipleBodyTemplate instead and set the templateType to TEMPLATE.MULTIPLE_BODY_TYPE.
-// Phase 4 of the annotation-template migration (tetras-dfb/root_repo#12) retired part of its
+// Phase 4 of the annotation-template migration (tetras-dbf/root_repo#12) retired part of its
 // duplication with MultipleBodyTemplate by reusing TextCommentInput (the same rich-text/
 // quick-template widget) instead of maintaining a separate, plainer TextFormSection. It does
 // NOT reuse MultipleBodyTemplate's tags input or component wholesale: TEXT_TYPE's stored shape

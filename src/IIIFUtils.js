@@ -143,6 +143,7 @@ export const getIIIFTargetFromMaeData = (
     case TEMPLATE.TAGGING_TYPE:
     case TEMPLATE.TEXT_TYPE:
     case TEMPLATE.MULTIPLE_BODY_TYPE:
+    case TEMPLATE.POI_TYPE:
       // In some case the target can be simplified in a string
       if (isSimpleTarget(maeTarget.drawingState.shapes)) {
         console.info('Simple target detected');
@@ -578,7 +579,7 @@ export const applyMultipleBodyConversion = (state) => {
  * Convert annotation state to be saved. Function change the annotationState object
  *
  * NOTE: as of Phase 2d of the per-template conversion-logic migration described in
- * tetras-dfb/root_repo#12, every templateType in templateRegistry.jsx owns its own
+ * tetras-dbf/root_repo#12, every templateType in templateRegistry.jsx owns its own
  * convertToAnnotation (see convertTaggingAnnotationToBeSaved/
  * convertTextCommentAnnotationToBeSaved/convertIIIFAnnotationToBeSaved/
  * convertMultipleBodyAnnotationToBeSaved), so this function is no longer used by any registry

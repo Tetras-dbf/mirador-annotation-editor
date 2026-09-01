@@ -3,7 +3,7 @@ import { isEmptyValue } from '../src/IIIFUtils';
 import { TARGET_TOOL_STATE } from '../src/annotationForm/AnnotationFormUtils';
 import { SHAPES_TOOL } from '../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 
-// Regression tests for issue #12 Phase 2d (tetras-dfb/root_repo#12): MultipleBodyTemplate is the
+// Regression tests for issue #12 Phase 2d (tetras-dbf/root_repo#12): MultipleBodyTemplate is the
 // last and primary template to get its own convertToAnnotation, extracted out of IIIFUtils.js's
 // convertAnnotationStateToBeSaved. These pin down that the extraction is behavior-preserving
 // against the MULTIPLE_BODY_TYPE cases already characterized in IIIFUtils.test.js (Phase 0),

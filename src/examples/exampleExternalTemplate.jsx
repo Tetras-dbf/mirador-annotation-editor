@@ -6,7 +6,7 @@ import { templateKit } from '../annotationForm/templateKit';
 const { AnnotationFormFooter } = templateKit;
 
 /**
- * Example third-party annotation template (tetras-dfb/root_repo#12, Phase 5): living
+ * Example third-party annotation template (tetras-dbf/root_repo#12, Phase 5): living
  * documentation of the config.annotation.externalTemplates extension point. See the README's
  * "External annotation templates" section for how to register this (or your own) via config.
  *

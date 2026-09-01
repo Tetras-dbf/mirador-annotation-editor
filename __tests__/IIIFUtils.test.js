@@ -10,7 +10,7 @@ import { TEMPLATE, TARGET_TOOL_STATE } from '../src/annotationForm/AnnotationFor
 import { SHAPES_TOOL } from '../src/annotationForm/AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 
 // Characterization tests for the conversion logic pinned down in the issue #12 analysis
-// (https://github.com/Tetras-dfb/root_repo/issues/12): these tests lock in the CURRENT
+// (https://github.com/Tetras-dbf/root_repo/issues/12): these tests lock in the CURRENT
 // behavior of the annotation<->IIIF conversion functions before any refactor touches them.
 // They are not a statement of "correct" behavior, only of "current" behavior.
 

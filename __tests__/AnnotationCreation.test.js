@@ -133,7 +133,7 @@ describe('TextCreation', () => {
     );
 
     expect(screen.getByText('useTemplate')).toBeInTheDocument();
-    // Phase 4 (tetras-dfb/root_repo#12): reuses TextCommentInput but not MultiTagsInput -
+    // Phase 4 (tetras-dbf/root_repo#12): reuses TextCommentInput but not MultiTagsInput -
     // TEXT_TYPE annotations have no tags array, unlike MultipleBodyTemplate.
     expect(screen.queryByText('tags')).not.toBeInTheDocument();
   });

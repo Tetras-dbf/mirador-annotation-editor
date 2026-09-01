@@ -8,7 +8,7 @@ import {
   getTemplateType, TEMPLATE_REGISTRY, TEMPLATE_TYPES,
 } from '../src/annotationForm/templateRegistry';
 
-// Dispatch tests for issue #12 (https://github.com/Tetras-dfb/root_repo/issues/12): AnnotationFormBody
+// Dispatch tests for issue #12 (https://github.com/Tetras-dbf/root_repo/issues/12): AnnotationFormBody
 // renders whichever template component the registry (templateRegistry.jsx, Phase 1) maps a given
 // templateType.id to. These tests pin down that dispatch behavior.
 

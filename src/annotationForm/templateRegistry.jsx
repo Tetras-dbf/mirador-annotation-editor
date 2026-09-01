@@ -12,7 +12,7 @@ import { MEDIA_TYPES, TEMPLATE } from './AnnotationFormUtils';
 const imageOnly = (mediaType) => mediaType === MEDIA_TYPES.IMAGE;
 
 /**
- * The annotation template registry (tetras-dfb/root_repo#12, Phase 1): a single source of
+ * The annotation template registry (tetras-dbf/root_repo#12, Phase 1): a single source of
  * truth for which template components exist, which are user-selectable from the template
  * picker, and how each converts its own state into a savable IIIF annotation. Replaces the
  * previous hardcoded TEMPLATE_TYPES array and the AnnotationFormBody if-chain.
@@ -36,7 +36,7 @@ const imageOnly = (mediaType) => mediaType === MEDIA_TYPES.IMAGE;
  * - convertToAnnotation(state, ctx): converts annotationState to a savable IIIF annotation.
  *   ctx is `{ canvas, windowId, playerReferences }`
  *
- * Phase 5 (tetras-dfb/root_repo#12): open for external registration via
+ * Phase 5 (tetras-dbf/root_repo#12): open for external registration via
  * `config.annotation.externalTemplates`, an array of entries following this same contract - see the
  * README's "External templates" section and src/examples/exampleExternalTemplate.jsx for a
  * complete, tested example. An external entry whose id collides with a built-in TEMPLATE.*
