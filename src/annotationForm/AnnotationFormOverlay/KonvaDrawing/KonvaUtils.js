@@ -150,7 +150,7 @@ export async function getSvg(windowId) {
       a,
     } = rgbaToObj(node.stroke());
     node.strokeScaleEnabled(true);
-    node.stroke(`rgb(${r},${g},${b}`);
+    node.stroke(`rgb(${r},${g},${b})`);
     node.strokeWidth(exportStrokeWidth);
   }
 
@@ -255,18 +255,12 @@ export function isShapesTool(activeTool) {
     .find((tool) => tool === activeTool);
 }
 
-/** Utils functions to convert string to object */
-export const rgbaToObj = (rgba = 'rgba(255,255,255,0.5)') => {
-  const rgbaArray = rgba.split(',');
-  return {
-    /* eslint-disable sort-keys */
-    r: Number(rgbaArray[0].split('(')[1]),
-    g: Number(rgbaArray[1]),
-    b: Number(rgbaArray[2]),
-    a: Number(rgbaArray[3].split(')')[0]),
-    /* eslint-enable sort-keys */
-  };
-};
+/**
+ * Utils function to convert a CSS color string to an {r,g,b,a} object.
+ * Delegates to Konva's own parser since callers can pass any CSS color format
+ * (hex, rgb(), rgba(), named colors like POI markers' '#ffffff' stroke), not just rgba().
+ */
+export const rgbaToObj = (rgba = "rgba(255,255,255,0.5)") => window.Konva.Util.colorToRGBA(rgba);
 
 /** Convert color object to rgba string */
 export const objToRgba = (obj = {
