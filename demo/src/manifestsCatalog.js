@@ -1,16 +1,8 @@
 export const manifestsCatalog = [
   // { manifestId: 'https://files.tetras-libre.fr/dev/multicanva-video.json' },
   { manifestId: 'https://files.tetras-libre.fr/dev/sun-400x400.json' },
-  { manifestId: 'https://files.tetras-libre.fr/dev/test-vertical-video.json' },
-  { manifestId: 'https://files.tetras-libre.fr/dev/Heterogeneous-media-on-several-canvases.json' },
-  { manifestId: 'https://files.tetras-libre.fr/dev/Clock/manifestWithAnnotationTemplates_MAE.json' },
-  { manifestId: 'https://files.tetras-libre.fr/dev/Clock/manifest.json' },
-  { manifestId: 'https://iiif.io/api/cookbook/recipe/0074-multiple-language-captions/manifest.json' },
-  { manifestId: 'https://iiif.harvardartmuseums.org/manifests/object/299843' },
-  { manifestId: 'https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json' },
-  { manifestId: 'https://files.tetras-libre.fr/dev/vertical_video_with_annot.json' },
-  { manifestId: 'https://purl.stanford.edu/sn904cj3429/iiif/manifest' },
-  { manifestId: 'https://coeso.tetras-libre.fr/data/coeso-deliverable/Manual_Network_Configuration.json' },
-  { manifestId: 'https://iiif.bodleian.ox.ac.uk/iiif/manifest/e32a277e-91e2-4a6d-8ba6-cc4bad230410.json' },
-  { manifestId: 'https://resource.arvest.app/6b665140d80c98444a02f142c1a8fcb42d201940/8000x6000-Pogacar.json' },
+  { manifestId: "https://resources.mirador-multi-user.com/0afb8961c1384e967e32bada54ebcd0b1543932b/The-Footprints-of-Prophet-Ibrahim.json" },
+  { manifestId: "https://resources.mirador-multi-user.com/f676f10ea711a0a00f14cce0667aec5e1458b5ff/Map-of-the-Nile-River-and-surrounding-areas.json" },
+  { manifestId: "https://resources.mirador-multi-user.com/c15d5f77e83be672e0fb3f45318bf547da070585/The-Haram-al-Sharif-in-Makkah.json" }
+
 ];

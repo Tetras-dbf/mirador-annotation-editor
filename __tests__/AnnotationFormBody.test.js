@@ -147,9 +147,11 @@ describe('TEMPLATE_TYPES (the template picker list)', () => {
     expect(TEMPLATE_TYPES(mockT).map((entry) => entry.id)).not.toContain(TEMPLATE.TEXT_TYPE);
   });
 
-  it('offers the 3 user-selectable templates', () => {
+  it('offers the 4 user-selectable templates', () => {
     expect(TEMPLATE_TYPES(mockT).map((entry) => entry.id).sort()).toEqual(
-      [TEMPLATE.MULTIPLE_BODY_TYPE, TEMPLATE.TAGGING_TYPE, TEMPLATE.IIIF_TYPE].sort(),
+      [
+        TEMPLATE.MULTIPLE_BODY_TYPE, TEMPLATE.TAGGING_TYPE, TEMPLATE.IIIF_TYPE, TEMPLATE.POI_TYPE,
+      ].sort(),
     );
   });
 });
@@ -210,6 +212,6 @@ describe('TEMPLATE_REGISTRY external registration (Phase 5, issue #12)', () => {
   });
 
   it('defaults to no external templates when none are passed', () => {
-    expect(TEMPLATE_REGISTRY(mockT)).toHaveLength(4);
+    expect(TEMPLATE_REGISTRY(mockT)).toHaveLength(5);
   });
 });

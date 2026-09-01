@@ -17,7 +17,7 @@ describe('exampleExternalTemplate', () => {
   it('follows the registry entry contract and registers cleanly alongside the built-ins', () => {
     const entries = TEMPLATE_REGISTRY(() => '', [exampleExternalTemplate]);
 
-    expect(entries).toHaveLength(5);
+    expect(entries).toHaveLength(6);
     expect(entries.find((entry) => entry.id === 'example-org/rating-template')).toBe(
       exampleExternalTemplate,
     );

@@ -191,9 +191,17 @@ const convertIIIFBodyToMae = (anno) => {
   let templateType = '';
   let textBody = {};
 
-  // if it's not a tagging annotation, we consider it's a multiple body.
-  // if templateType === TEMPLATE.TAGGING_TYPE, textBody must be undefined
-  if (anno.motivation === 'tagging' || (Array.isArray(anno.motivation) && anno.motivation.includes('tagging'))) {
+  // A POI annotation (motivation: 'identifying' + the dbf:kind marker - see
+  // docs/superpowers/specs/2026-09-01-poi-iiif-annotation-format-design.md in root_repo) must be
+  // detected before the tagging/multiple_body fallback below, or an annotation created outside
+  // MAE (e.g. directly via a future StrapiAnnotationAdapter) would open under
+  // MultipleBodyTemplate instead of POITemplate, and re-saving it would silently rebuild `body`
+  // from MultipleBodyTemplate's shape - discarding the POI's title/description structure.
+  // POITemplate derives title/descriptionItems straight from `anno.body` itself (not from
+  // maeData.textBody), so textBody is intentionally left empty here.
+  if (anno['dbf:kind'] === 'POI') {
+    templateType = TEMPLATE.POI_TYPE;
+  } else if (anno.motivation === 'tagging' || (Array.isArray(anno.motivation) && anno.motivation.includes('tagging'))) {
     templateType = TEMPLATE.TAGGING_TYPE;
   } else {
     templateType = TEMPLATE.MULTIPLE_BODY_TYPE;
@@ -455,7 +463,7 @@ export const getDefaultValue = () => `${new Date().toLocaleString()}`;
 
 /** templateTypes with a Konva-drawn spatial target, i.e. every template except IIIF_TYPE */
 const SPATIAL_TARGET_TEMPLATE_TYPES = [
-  TEMPLATE.TAGGING_TYPE, TEMPLATE.TEXT_TYPE, TEMPLATE.MULTIPLE_BODY_TYPE,
+  TEMPLATE.TAGGING_TYPE, TEMPLATE.TEXT_TYPE, TEMPLATE.MULTIPLE_BODY_TYPE, TEMPLATE.POI_TYPE,
 ];
 
 /**
