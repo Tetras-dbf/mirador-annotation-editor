@@ -1,0 +1,8 @@
+.claude
+.git
+# This package declares "mirador" as a peerDependency (the host app must supply a single shared
+# instance) but also as a devDependency (for its own standalone demo). Since it's consumed
+# elsewhere via a raw file: link to this checkout (not a published, pruned package), that dev-only
+# copy would otherwise shadow the host's "mirador" when this package's own code resolves it,
+# splitting Mirador's module-level singletons (e.g. OSDReferences) across two separate instances.
+node_modules/mirador
