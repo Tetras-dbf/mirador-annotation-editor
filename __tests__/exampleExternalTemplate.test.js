@@ -9,7 +9,7 @@ import {
 } from '../src/annotationForm/templates/examples/exampleExternalTemplate';
 import { TEMPLATE_REGISTRY } from '../src/annotationForm/templates/registry';
 
-// Living documentation for issue #12 Phase 5 (tetras-dfb/root_repo#12): proves the example
+// Living documentation for issue #12 Phase 5 (tetras-dbf/root_repo#12): proves the example
 // third-party template actually works end-to-end through the real extension point, not just
 // that it type-checks against the contract.
 

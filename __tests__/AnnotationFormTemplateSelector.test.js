@@ -5,7 +5,7 @@ import { render, screen } from './test-utils';
 import AnnotationFormTemplateSelector from '../src/annotationForm/templates/AnnotationFormTemplateSelector';
 import { MEDIA_TYPES } from '../src/annotationForm/AnnotationFormUtils';
 
-// Selector tests for issue #12 (https://github.com/Tetras-dfb/root_repo/issues/12): pins down
+// Selector tests for issue #12 (https://github.com/Tetras-dbf/root_repo/issues/12): pins down
 // which template cards AnnotationFormTemplateSelector offers per mediaType, ahead of a
 // registry-based refactor.
 

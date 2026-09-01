@@ -5,7 +5,7 @@ import TextFormSection from '../src/annotationForm/TextFormSection';
 import { TextCommentInput } from '../src/annotationForm/TextCommentInput';
 import { MultiTagsInput } from '../src/annotationForm/MultiTagsInput';
 
-// Smoke test for issue #12 Phase 3 (tetras-dfb/root_repo#12): templateKit is the public,
+// Smoke test for issue #12 Phase 3 (tetras-dbf/root_repo#12): templateKit is the public,
 // documented building-block bundle both in-repo and future externally-registered templates
 // are meant to compose instead of reaching into this package's file structure directly. Pins
 // down that it actually re-exports the real components (not stale/renamed copies).

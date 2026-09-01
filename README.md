@@ -136,8 +136,8 @@ UI and a new way of saving what the user creates, alongside the built-in Note, T
 JSON mode.
 
 MAE's built-in annotation templates are entries in an internal template registry. As of the
-template-registry migration
-([tetras-dfb/root_repo#12](https://github.com/Tetras-dfb/root_repo/issues/12)), you can register
+template-registry migration ([tetras-dbf/root_repo#12](https://github.com/Tetras-dbf/root_repo/issues/12)), you can
+register
 your own annotation template alongside them via `config.annotation.externalTemplates`: an array
 of entries following the same contract as a built-in one.
 
