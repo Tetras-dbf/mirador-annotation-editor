@@ -1,8 +1,12 @@
 .claude
 .git
-# This package declares "mirador" as a peerDependency (the host app must supply a single shared
-# instance) but also as a devDependency (for its own standalone demo). Since it's consumed
-# elsewhere via a raw file: link to this checkout (not a published, pruned package), that dev-only
-# copy would otherwise shadow the host's "mirador" when this package's own code resolves it,
-# splitting Mirador's module-level singletons (e.g. OSDReferences) across two separate instances.
+# This package declares "mirador" (and react-i18next, i18next, react, react-dom) as
+# peerDependencies (the host app must supply a single shared instance) but also installs its own
+# copies as devDependencies (for its own standalone demo). Since it's consumed elsewhere via a raw
+# file: link to this checkout (not a published, pruned package), those dev-only copies would
+# otherwise shadow the host's when this package's own code resolves them -- splitting
+# module-level singletons (e.g. Mirador's OSDReferences) and, for react-i18next, React Context
+# identity (useTranslation() then can't find the real I18nextProvider) across separate instances.
 node_modules/mirador
+node_modules/react-i18next
+node_modules/i18next
