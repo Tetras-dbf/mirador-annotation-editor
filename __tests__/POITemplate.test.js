@@ -71,9 +71,6 @@ const basePoiState = () => ({
   'dbf:kind': 'POI',
   maeData: {
     descriptionItems: [],
-    journeyId: '',
-    journeyOrder: '',
-    linkedMapId: '',
     target: {
       drawingState: { shapes: [circleShape()] },
       fullCanvaXYWH: '0,0,800,600',
@@ -138,36 +135,22 @@ describe('applyPoiBodyConversion', () => {
     ]);
   });
 
-  it('sets dbf:journey when a journey is selected, and omits it otherwise', () => {
-    const withJourney = basePoiState();
-    withJourney.maeData.journeyId = 'journey-1';
-    withJourney.maeData.journeyOrder = 3;
-    expect(applyPoiBodyConversion(withJourney)['dbf:journey']).toEqual({ id: 'journey-1', order: 3 });
-
-    const withoutJourney = basePoiState();
-    expect(applyPoiBodyConversion(withoutJourney)).not.toHaveProperty('dbf:journey');
-  });
-
-  it('coerces journeyOrder (a string, from the number <input>) to a number, and keeps 0', () => {
+  it('leaves an existing dbf:journey/dbf:linkedMap untouched - these are Strapi-managed relations, not editable here', () => {
     const state = basePoiState();
-    state.maeData.journeyId = 'journey-1';
-    state.maeData.journeyOrder = '0';
+    state['dbf:journey'] = { id: 'journey-1', order: 3 };
+    state['dbf:linkedMap'] = { id: 'map-7', type: 'Manifest' };
 
     const result = applyPoiBodyConversion(state);
 
-    expect(result['dbf:journey']).toEqual({ id: 'journey-1', order: 0 });
+    expect(result['dbf:journey']).toEqual({ id: 'journey-1', order: 3 });
+    expect(result['dbf:linkedMap']).toEqual({ id: 'map-7', type: 'Manifest' });
   });
 
-  it('sets dbf:linkedMap when a linked map is selected, and omits it otherwise', () => {
-    const withLinkedMap = basePoiState();
-    withLinkedMap.maeData.linkedMapId = 'map-7';
-    expect(applyPoiBodyConversion(withLinkedMap)['dbf:linkedMap']).toEqual({
-      id: 'map-7',
-      type: 'Manifest',
-    });
+  it('does not add dbf:journey/dbf:linkedMap when the annotation never had them', () => {
+    const result = applyPoiBodyConversion(basePoiState());
 
-    const withoutLinkedMap = basePoiState();
-    expect(applyPoiBodyConversion(withoutLinkedMap)).not.toHaveProperty('dbf:linkedMap');
+    expect(result).not.toHaveProperty('dbf:journey');
+    expect(result).not.toHaveProperty('dbf:linkedMap');
   });
 });
 
@@ -196,12 +179,7 @@ describe('POITemplate (render)', () => {
   /** Identity translation stub, matching exampleExternalTemplate.test.js's convention */
   const mockT = (key) => key;
 
-  /**
-   * Render POITemplate wrapped the same way exampleExternalTemplate.test.js does, with an
-   * empty config.annotation preloaded (POITemplate reads config.annotation.journeys/linkedMaps
-   * via useSelector, same as MultipleBodyTemplate/TaggingTemplate read tagsSuggestions/
-   * commentTemplates - the default store built by test-utils has no config.annotation at all).
-   */
+  /** Render POITemplate wrapped the same way exampleExternalTemplate.test.js does */
   const renderPoiTemplate = (annotation = {}, saveAnnotation = vi.fn()) => render(
     <I18nextProvider i18n={i18n}>
       <POITemplate

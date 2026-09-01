@@ -15,9 +15,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { getConfig } from 'mirador';
 import { isValidUrl, TEMPLATE } from '../../AnnotationFormUtils';
 import { resizeKonvaStage, SHAPES_TOOL } from '../../AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 import { finalizeSpatialTarget, getDefaultValue, isEmptyValue } from '../../../IIIFUtils';
@@ -56,18 +54,22 @@ export const isValidPointTarget = (maeData) => {
 };
 
 /**
- * Build the saved `body` array (title, then ordered description items) and the top-level
- * dbf:journey / dbf:linkedMap extension properties from maeData. Mirrors
+ * Build the saved `body` array (title, then ordered description items) from maeData. Mirrors
  * applyMultipleBodyConversion's role for MULTIPLE_BODY_TYPE, kept local to this template since
  * (unlike applyMultipleBodyConversion) nothing else needs to share it.
+ *
+ * Journey membership (dbf:journey) and cross-map linking (dbf:linkedMap) are deliberately NOT
+ * read or written here: those are relations managed from the Strapi backoffice, not from the
+ * annotation editor. `stateToSave` is the same object as `state` (mutated in place, matching
+ * every other template's convention), so whatever dbf:journey/dbf:linkedMap the annotation
+ * already carried when it was loaded survives untouched into the saved result - editing a POI's
+ * title/description/target in MAE must never silently drop its existing relations.
  * @param {object} state
  * @returns {object} the same state, mutated
  */
 export const applyPoiBodyConversion = (state) => {
   const stateToSave = state;
-  const {
-    title, descriptionItems, journeyId, journeyOrder, linkedMapId,
-  } = stateToSave.maeData;
+  const { title, descriptionItems } = stateToSave.maeData;
 
   stateToSave.body = [
     {
@@ -82,31 +84,13 @@ export const applyPoiBodyConversion = (state) => {
         : { id: item.value, purpose: 'describing', type: item.type })),
   ];
 
-  if (journeyId) {
-    // journeyOrder comes from a controlled <input type="number">, so its value is always a
-    // string (even "0") - `journeyOrder || null` would silently turn a legitimate order of 0
-    // into null, and would save "0" (a string) rather than 0 (a number) otherwise.
-    const order = journeyOrder === '' || journeyOrder === null || journeyOrder === undefined
-      ? null
-      : Number(journeyOrder);
-    stateToSave['dbf:journey'] = { id: journeyId, order };
-  } else {
-    delete stateToSave['dbf:journey'];
-  }
-
-  if (linkedMapId) {
-    stateToSave['dbf:linkedMap'] = { id: linkedMapId, type: 'Manifest' };
-  } else {
-    delete stateToSave['dbf:linkedMap'];
-  }
-
   return stateToSave;
 };
 
 /**
- * Convert a POITemplate annotationState into a savable IIIF annotation: build the body array and
- * dbf:* extension properties (applyPoiBodyConversion), then finalize the spatial target through
- * the same shared pipeline every other spatial-target template uses.
+ * Convert a POITemplate annotationState into a savable IIIF annotation: build the body array
+ * (applyPoiBodyConversion), then finalize the spatial target through the same shared pipeline
+ * every other spatial-target template uses.
  * @param {object} state
  * @param {{ canvas: object, windowId: string, playerReferences: object }} ctx
  * @returns {Promise<object>}
@@ -130,10 +114,6 @@ export default function POITemplate(
     windowId,
   },
 ) {
-  const config = useSelector((state) => getConfig(state));
-  const journeys = config.annotation.journeys ?? [];
-  const linkedMaps = config.annotation.linkedMaps ?? [];
-
   let maeAnnotation = annotation;
 
   if (!maeAnnotation.id) {
@@ -142,9 +122,6 @@ export default function POITemplate(
       'dbf:kind': 'POI',
       maeData: {
         descriptionItems: [],
-        journeyId: '',
-        journeyOrder: '',
-        linkedMapId: '',
         target: null,
         templateType: TEMPLATE.POI_TYPE,
         title: '',
@@ -167,9 +144,8 @@ export default function POITemplate(
         type: body.type,
         value: body.type === DESCRIPTION_ITEM_TYPES.TEXT ? body.value : body.id,
       }));
-    maeAnnotation.maeData.journeyId = maeAnnotation['dbf:journey']?.id ?? '';
-    maeAnnotation.maeData.journeyOrder = maeAnnotation['dbf:journey']?.order ?? '';
-    maeAnnotation.maeData.linkedMapId = maeAnnotation['dbf:linkedMap']?.id ?? '';
+    // dbf:journey / dbf:linkedMap (if present) are intentionally left untouched on
+    // maeAnnotation itself - not read into maeData, since there is no UI here to edit them.
   }
 
   const [annotationState, setAnnotationState] = useState(maeAnnotation);
@@ -333,49 +309,6 @@ export default function POITemplate(
         <Button startIcon={<AddIcon />} onClick={addDescriptionItem}>
           {t('poi_add_description_item')}
         </Button>
-      </Grid>
-      <Grid>
-        <FormControl fullWidth size="small">
-          <InputLabel id="poi-journey-label">{t('poi_journey')}</InputLabel>
-          <Select
-            labelId="poi-journey-label"
-            label={t('poi_journey')}
-            value={annotationState.maeData.journeyId}
-            onChange={(event) => updateMaeData({ journeyId: event.target.value })}
-          >
-            <MenuItem value="">{t('poi_journey_none')}</MenuItem>
-            {journeys.map((journey) => (
-              <MenuItem key={journey.id} value={journey.id}>{journey.label}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid>
-      {annotationState.maeData.journeyId && (
-        <Grid>
-          <TextField
-            label={t('poi_journey_order')}
-            type="number"
-            value={annotationState.maeData.journeyOrder}
-            variant="outlined"
-            onChange={(event) => updateMaeData({ journeyOrder: event.target.value })}
-          />
-        </Grid>
-      )}
-      <Grid>
-        <FormControl fullWidth size="small">
-          <InputLabel id="poi-linked-map-label">{t('poi_linked_map')}</InputLabel>
-          <Select
-            labelId="poi-linked-map-label"
-            label={t('poi_linked_map')}
-            value={annotationState.maeData.linkedMapId}
-            onChange={(event) => updateMaeData({ linkedMapId: event.target.value })}
-          >
-            <MenuItem value="">{t('poi_linked_map_none')}</MenuItem>
-            {linkedMaps.map((map) => (
-              <MenuItem key={map.id} value={map.id}>{map.label}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
       </Grid>
       <Grid>
         <TargetFormSection
