@@ -96,8 +96,9 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
-    "@mui/icons-material": "^7.3.10",
-    "@mui/material": "^7.3.10",
+    "@mui/icons-material": "7.3.10",
+    "@mui/material": "7.3.10",
+    "@mui/system": "7.3.10",
     "@mui/utils": "^5.17.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -125,10 +126,25 @@
     "jest-localstorage-mock": "^2.4.2",
     "mirador": "^4.2.3",
     "prop-types": "^15.7.2",
-    "react": "^18.3.1 || ^19.2.5",
-    "react-dom": "^18.3.1 || ^19.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "style-loader": "^4.0.0",
     "uuid": "^13.0.0"
+  },
+  "overrides": {
+    "@mui/core-downloads-tracker": "7.3.10",
+    "@mui/material-pigment-css": "7.3.10",
+    "@mui/private-theming": "7.3.10",
+    "@mui/material": {
+      "@mui/system": "7.3.10",
+      "@mui/utils": "7.3.10"
+    },
+    "@mui/system": {
+      "@mui/utils": "7.3.10"
+    },
+    "mirador": {
+      "@mui/system": "7.3.10"
+    }
   },
   "license": "Apache-2.0"
 }
