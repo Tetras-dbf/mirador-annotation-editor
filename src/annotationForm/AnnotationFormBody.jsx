@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { getConfig } from 'mirador';
+import { getConfig } from 'dbf-mirador';
 import './debug.css';
 import { DebugInformation } from './DebugInformation';
 import { TEMPLATE_REGISTRY } from './templates/registry';

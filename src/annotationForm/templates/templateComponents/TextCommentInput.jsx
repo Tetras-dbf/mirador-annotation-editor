@@ -13,7 +13,7 @@ import {
 import CreatableSelect from 'react-select/creatable';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { getConfig } from 'mirador';
+import { getConfig } from 'dbf-mirador';
 import TextEditor from '../../../TextEditor';
 
 /**

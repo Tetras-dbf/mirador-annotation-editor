@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { getConfig } from 'mirador';
+import { getConfig } from 'dbf-mirador';
 import AnnotationDrawing from '../../AnnotationFormOverlay/AnnotationDrawing';
 import { TARGET_TOOL_STATE, TARGET_VIEW } from '../../AnnotationFormUtils';
 import { getContextParams } from '../../../contextParams';

@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { getConfig } from 'mirador';
+import { getConfig } from 'dbf-mirador';
 import PropTypes from 'prop-types';
 import { MEDIA_TYPES } from '../AnnotationFormUtils';
 import { TEMPLATE_TYPES } from './registry';

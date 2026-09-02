@@ -2,7 +2,7 @@ import {
   getVisibleCanvases,
   getVisibleCanvasAudioResources,
   getVisibleCanvasVideoResources,
-} from 'mirador';
+} from 'dbf-mirador';
 import { MEDIA_TYPES } from './annotationForm/AnnotationFormUtils';
 
 /** */

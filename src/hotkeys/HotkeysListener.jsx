@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from 'react-redux';
-import { getFocusedWindowId, getConfig } from 'mirador';
+import { getFocusedWindowId, getConfig } from 'dbf-mirador';
 import HOTKEY_ACTIONS from './hotkeysDefinitions';
 
 /** Elements where keystrokes should NOT trigger hotkeys */

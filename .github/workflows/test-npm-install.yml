@@ -9,7 +9,7 @@ on:
   workflow_dispatch: # allows manual triggering
 
 jobs:
-  test-install-with-mirador-latest:
+  test-install-with-dbf-mirador-latest:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,12 +36,14 @@ jobs:
           npm pack --ignore-scripts
           ls -la *.tgz
 
-      # Simulate a real consumer install: mirador@latest + this plugin tgz
+      # Simulate a real consumer install: dbf-mirador@latest + this plugin tgz.
       # Also disable scripts so we only test npm's dependency tree resolution.
+      # NB: this fails with a 404 until dbf-mirador has its first publish
+      # (tracked in mirador#1) -- that's expected, not a regression here.
       - name: Consumer install test (resolution only)
         run: |
           set -euxo pipefail
           mkdir -p /tmp/consumer
           cd /tmp/consumer
           npm init -y
-          npm i --ignore-scripts mirador@latest $GITHUB_WORKSPACE/mirador-annotation-editor-*.tgz
+          npm i --ignore-scripts dbf-mirador@latest $GITHUB_WORKSPACE/dbf-mirador-annotation-editor-*.tgz

@@ -20,7 +20,7 @@ export default {
         /^react(\/.*)?$/, /^react-dom(\/.*)?$/,
         /^@mui\/material(\/.*)?$/, /^@mui\/system(\/.*)?$/,
         /^@emotion\/react(\/.*)?$/, /^@emotion\/styled(\/.*)?$/,
-        /^mirador(\/.*)?$/,
+        /^dbf-mirador(\/.*)?$/,
         'i18next',
         'react-i18next',
       ],

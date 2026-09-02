@@ -4,7 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { styled } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
-import { getConfig } from 'mirador';
+import { getConfig } from 'dbf-mirador';
 import { DEFAULT_QUILL_CONFIG } from './utils';
 
 const StyledReactQuill = styled(ReactQuill)(({ theme }) => ({

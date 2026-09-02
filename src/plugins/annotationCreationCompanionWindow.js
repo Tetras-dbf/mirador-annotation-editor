@@ -1,4 +1,4 @@
-import * as actions from 'mirador';
+import * as actions from 'dbf-mirador';
 import {
   getCompanionWindow,
   getVisibleCanvases,
@@ -6,7 +6,7 @@ import {
   OSDReferences,
   removeCompanionWindow as removeCompanionWindowAction,
   receiveAnnotation as receiveAnnotationAction,
-} from 'mirador';
+} from 'dbf-mirador';
 
 import annotationForm from '../annotationForm/AnnotationForm';
 import { WindowPlayer } from '../playerReferences';

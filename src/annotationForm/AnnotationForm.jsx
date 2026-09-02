@@ -1,7 +1,7 @@
 import React, {
   useCallback, useEffect, useReducer, useRef, useState,
 } from 'react';
-import { ConnectedCompanionWindow } from 'mirador';
+import { ConnectedCompanionWindow } from 'dbf-mirador';
 import PropTypes from 'prop-types';
 import { Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';

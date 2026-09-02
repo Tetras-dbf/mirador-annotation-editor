@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { getConfig } from 'mirador';
+import { getConfig } from 'dbf-mirador';
 import { TEMPLATE } from '../../AnnotationFormUtils';
 import { resizeKonvaStage } from '../../AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 import { getContextParams } from '../../../contextParams';
