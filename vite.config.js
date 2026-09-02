@@ -1,11 +1,20 @@
 import react from '@vitejs/plugin-react';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { esmExternalRequirePlugin } from 'vite';
 import pkg from './package.json';
 
 const peers = Object.keys(pkg?.peerDependencies ?? {});
 
-// TODO if build error perhaps get to esmExternalRequirePlugin
+const externalIds = [
+  ...peers,
+  /^react(\/.*)?$/, /^react-dom(\/.*)?$/,
+  /^@mui\/material(\/.*)?$/, /^@mui\/system(\/.*)?$/,
+  /^@emotion\/react(\/.*)?$/, /^@emotion\/styled(\/.*)?$/,
+  /^dbf-mirador(\/.*)?$/,
+  'i18next',
+  'react-i18next',
+];
 
 export default {
   build: {
@@ -17,15 +26,6 @@ export default {
       name: 'MiradorAnnotationEditor',
     },
     rollupOptions: {
-      external: [
-        ...peers,
-        /^react(\/.*)?$/, /^react-dom(\/.*)?$/,
-        /^@mui\/material(\/.*)?$/, /^@mui\/system(\/.*)?$/,
-        /^@emotion\/react(\/.*)?$/, /^@emotion\/styled(\/.*)?$/,
-        /^dbf-mirador(\/.*)?$/,
-        'i18next',
-        'react-i18next',
-      ],
       output: {
         assetFileNames: 'index.[ext]',
         exports: 'named', // Fixes the warning
@@ -57,7 +57,17 @@ export default {
     },
     include: ['@emotion/react', '@mui/material', 'i18next'],
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    // Bundled deps (e.g. react-redux's use-sync-external-store shim) call
+    // require('react') at runtime. Rolldown (Vite 8's bundler) leaves that as
+    // a literal require() against the externalized "react" module instead of
+    // converting it to a static import, which throws in the browser ("Dynamic
+    // require of "react" is not supported"). This plugin rewrites those
+    // require() calls into proper ESM imports.
+    // https://rolldown.rs/in-depth/bundling-cjs#require-external-modules
+    esmExternalRequirePlugin({ external: externalIds }),
+  ],
   resolve: {
     alias: { '@tests/': fileURLToPath(new URL('./__tests__', import.meta.url)) },
     dedupe: [
