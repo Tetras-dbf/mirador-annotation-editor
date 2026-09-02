@@ -50,7 +50,7 @@ lot of technical and functional modifications (including migration from PaperJS 
 ### NPM package
 
 ```bash
-npm install mirador-annotation-editor
+npm install dbf-mirador-annotation-editor
 ```
 
 ### Use in existing npm project with previous plugins
@@ -59,13 +59,13 @@ You can override existing annotation plugin with your own versions by using npm.
 
 Update your `package.json` file to include the following dependencies and devDependencies:
 ```json
-"mirador-annotations": "npm:mirador-annotation-editor@^1.1.6",
+"mirador-annotations": "npm:dbf-mirador-annotation-editor@^1.3.3",
 ```
 
 You need also to use the latest version of Mirador 4.
 
 ```json
-"mirador": "4.0.0"
+"mirador": "npm:dbf-mirador@4.2.3"
 ```
 
 [Mirador 4 integration example](https://github.com/ProjectMirador/mirador-integration)
@@ -142,7 +142,7 @@ your own annotation template alongside them via `config.annotation.externalTempl
 of entries following the same contract as a built-in one.
 
 ```js
-import { templateKit } from 'mirador-annotation-editor';
+import { templateKit } from 'dbf-mirador-annotation-editor';
 
 const { AnnotationFormFooter } = templateKit; // reuse MAE's own building blocks in your template
 

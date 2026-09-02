@@ -9,7 +9,7 @@ import {
   addCompanionWindow as addCompanionWindowAction,
   setWindowViewType as setWindowViewTypeAction,
   getCompanionWindowsForContent,
-} from 'mirador';
+} from 'dbf-mirador';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';

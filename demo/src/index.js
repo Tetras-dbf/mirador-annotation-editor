@@ -1,4 +1,4 @@
-import Mirador from 'mirador';
+import Mirador from 'dbf-mirador';
 import annotationPlugins from '../../src';
 import LocalStorageAdapter from '../../src/annotationAdapter/LocalStorageAdapter';
 

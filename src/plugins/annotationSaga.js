@@ -2,7 +2,7 @@ import {
   all, call, put, select, takeEvery,
 } from 'redux-saga/effects';
 
-import { receiveAnnotation, ActionTypes, getConfig } from 'mirador';
+import { receiveAnnotation, ActionTypes, getConfig } from 'dbf-mirador';
 
 /** Retrieves all the annotations available in the annotation adapter */
 function* retrieveAnnotationsFormStore(canvasId) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { rootReducer as createRootReducer, settings } from 'mirador';
+import { rootReducer as createRootReducer, settings } from 'dbf-mirador';
 import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { createStore, applyMiddleware } from 'redux';

@@ -5,7 +5,7 @@ import { I18nextProvider } from 'react-i18next';
 import { i18n } from '../setupTest';
 import { useDispatch } from 'react-redux';
 
-import * as miradorPkg from 'mirador';
+import * as miradorPkg from 'dbf-mirador';
 import LocalStorageAdapter from '../src/annotationAdapter/LocalStorageAdapter';
 import miradorAnnotationPlugin from '../src/plugins/miradorAnnotationPlugin';
 import { render, screen, fireEvent } from './test-utils';
@@ -19,8 +19,8 @@ vi.mock('react-redux', async () => {
   };
 });
 
-vi.mock('mirador', async () => {
-  const actual = await vi.importActual('mirador');
+vi.mock('dbf-mirador', async () => {
+  const actual = await vi.importActual('dbf-mirador');
   return {
     ...actual,
     getWindowViewType: vi.fn(),

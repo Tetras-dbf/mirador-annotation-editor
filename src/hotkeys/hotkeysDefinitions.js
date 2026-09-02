@@ -6,7 +6,7 @@ import {
   getVisibleCanvases,
   receiveAnnotation,
   removeCompanionWindow,
-} from 'mirador';
+} from 'dbf-mirador';
 import { MAE_DELETE_SHAPE_EVENT, MAE_SAVE_EVENT } from './hotkeysEvents';
 
 /** Return the open companion windows for a given window */

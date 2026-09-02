@@ -11,7 +11,7 @@ import {
   receiveAnnotation as receiveAnnotationAction,
   setWindowViewType as setWindowViewTypeAction,
   updateWindow as updateWindowAction,
-} from 'mirador';
+} from 'dbf-mirador';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import CanvasListItem from '../CanvasListItem';
