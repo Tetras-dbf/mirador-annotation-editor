@@ -7,12 +7,17 @@ import { useSelector } from 'react-redux';
 import { getConfig } from 'mirador';
 import { DEFAULT_QUILL_CONFIG } from './utils';
 
-const StyledReactQuill = styled(ReactQuill)(({ theme }) => ({
-  '.ql-container': {
+// Styling `ReactQuill` directly with `styled()` mutates the props object MUI/emotion hands to
+// it (attachTheme sets `props.theme`), but ReactQuill is a class component whose props object
+// React freezes in development - under React 18 that throws "Cannot assign to read only
+// property 'theme'" (not reproducible under 19, where React no longer freezes it the same way).
+// Styling a plain wrapper div instead avoids emotion ever injecting props into ReactQuill.
+const StyledQuillWrapper = styled('div')({
+  '& .ql-container': {
     maxWidth: '100%',
     width: '100%',
   },
-  '.ql-editor': {
+  '& .ql-editor': {
     maxWidth: '100%',
     minHeight: '150px',
     overflowWrap: 'break-word',
@@ -22,7 +27,7 @@ const StyledReactQuill = styled(ReactQuill)(({ theme }) => ({
   },
   maxWidth: '100%',
   width: '100%',
-}));
+});
 
 /** Rich text editor for annotation body */
 function TextEditor({ text, setText }) {
@@ -42,14 +47,16 @@ function TextEditor({ text, setText }) {
 
   return (
     <div data-text-editor="name" data-testid="textEditor">
-      <StyledReactQuill
-        value={text}
-        onChange={handleChange}
-        placeholder="Your text here"
-        bounds='[data-text-editor="name"]'
-        modules={modules}
-        formats={formats}
-      />
+      <StyledQuillWrapper>
+        <ReactQuill
+          value={text}
+          onChange={handleChange}
+          placeholder="Your text here"
+          bounds='[data-text-editor="name"]'
+          modules={modules}
+          formats={formats}
+        />
+      </StyledQuillWrapper>
     </div>
   );
 }
