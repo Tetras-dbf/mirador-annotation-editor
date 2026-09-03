@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { esmExternalRequirePlugin } from 'vite';
+import * as vite from 'vite';
 import pkg from './package.json';
 
 const peers = Object.keys(pkg?.peerDependencies ?? {});
@@ -66,7 +66,9 @@ export default {
     // require of "react" is not supported"). This plugin rewrites those
     // require() calls into proper ESM imports.
     // https://rolldown.rs/in-depth/bundling-cjs#require-external-modules
-    esmExternalRequirePlugin({ external: externalIds }),
+    // Only present on Vite 8+ (Rolldown); @vitejs/plugin-react@^4 caps the
+    // installed vite at ^7, so this is a no-op until that dep is upgraded.
+    ...(vite.esmExternalRequirePlugin ? [vite.esmExternalRequirePlugin({ external: externalIds })] : []),
   ],
   resolve: {
     alias: { '@tests/': fileURLToPath(new URL('./__tests__', import.meta.url)) },
