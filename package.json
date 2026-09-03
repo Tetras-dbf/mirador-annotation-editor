@@ -96,16 +96,16 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
-    "@mui/icons-material": "7.3.10",
-    "@mui/material": "7.3.10",
-    "@mui/system": "7.3.10",
-    "@mui/utils": "^5.17.1",
+    "@mui/icons-material": "^7.3.11",
+    "@mui/material": "^7.3.11",
+    "@mui/system": "^7.3.11",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.4.3",
     "@vitejs/plugin-react": "^4.3.3",
     "@vitest/coverage-v8": "^3.0.5",
+    "vite": "^8.2.1",
     "canvas": "^3.2.1",
     "css-loader": "^6.10.0",
     "enzyme": "^3.11.0",
@@ -132,19 +132,8 @@
     "uuid": "^13.0.0"
   },
   "overrides": {
-    "@mui/core-downloads-tracker": "7.3.10",
-    "@mui/material-pigment-css": "7.3.10",
-    "@mui/private-theming": "7.3.10",
-    "@mui/material": {
-      "@mui/system": "7.3.10",
-      "@mui/utils": "7.3.10"
-    },
-    "@mui/system": {
-      "@mui/utils": "7.3.10"
-    },
-    "mirador": {
-      "@mui/system": "7.3.10"
-    }
+    "react": "$react",
+    "react-dom": "$react-dom"
   },
   "license": "Apache-2.0"
 }
