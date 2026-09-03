@@ -82,7 +82,7 @@ export function TargetPointInput({
     <Grid container direction="column">
       <Typography variant="subFormSectionTitle">{t('spatialTarget')}</Typography>
       <Typography variant="caption">{t('poi_click_to_place')}</Typography>
-      <Grid direction="row" spacing={2}>
+      <Grid container direction="row" spacing={2}>
         <AnnotationDrawing
           displayMode={KONVA_MODE.POI}
           drawingState={drawingState}

@@ -99,7 +99,6 @@
     "@mui/icons-material": "7.3.10",
     "@mui/material": "7.3.10",
     "@mui/system": "7.3.10",
-    "@mui/utils": "^5.17.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.2",
