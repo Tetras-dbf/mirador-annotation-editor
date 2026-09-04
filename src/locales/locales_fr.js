@@ -71,6 +71,7 @@ export const fr = {
   poi_description_item_type_text: 'Texte',
   poi_description_item_url_value: 'URL',
   poi_description_section: 'Description',
+  poi_language: "Langue",
   poi_move_description_item_down: 'Déplacer vers le bas',
   poi_move_description_item_up: 'Déplacer vers le haut',
   poi_remove_description_item: 'Supprimer cet élément de description',

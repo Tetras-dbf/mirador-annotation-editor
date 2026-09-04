@@ -16,6 +16,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
+import { useSelector } from "react-redux";
+import { getConfig } from "dbf-mirador";
 import { isValidUrl, TEMPLATE } from '../../AnnotationFormUtils';
 import { resizeKonvaStage, SHAPES_TOOL } from '../../AnnotationFormOverlay/KonvaDrawing/KonvaUtils';
 import { finalizeSpatialTarget, getDefaultValue, isEmptyValue } from '../../../IIIFUtils';
@@ -30,6 +32,18 @@ export const DESCRIPTION_ITEM_TYPES = {
   SOUND: 'Sound',
   TEXT: 'TextualBody',
 };
+
+const EMPTY_LOCALE_CONTENT = { descriptionItems: [], title: "" };
+
+/** Read one locale's title/descriptionItems out of maeData.contentByLocale, defaulting to
+ * empty content for a locale the editor hasn't touched yet (never written into state - see
+ * applyPoiBodyConversion, which is what keeps an untouched locale from being saved as an
+ * empty Strapi row).
+ * @param {object} contentByLocale
+ * @param {string} locale
+ * @returns {{ title: string, descriptionItems: Array }}
+ */
+const getLocaleContent = (contentByLocale, locale) => contentByLocale[locale] ?? EMPTY_LOCALE_CONTENT;
 
 /**
  * A POI's spatial target must be exactly one placed POI marker (SHAPES_TOOL.POI, tetras-dbf/
@@ -55,9 +69,11 @@ export const isValidPointTarget = (maeData) => {
 };
 
 /**
- * Build the saved `body` array (title, then ordered description items) from maeData. Mirrors
- * applyMultipleBodyConversion's role for MULTIPLE_BODY_TYPE, kept local to this template since
- * (unlike applyMultipleBodyConversion) nothing else needs to share it.
+ * Build the saved `body` array from maeData.contentByLocale: one identifying + N describing
+ * body items per locale the editor actually touched, each tagged `language` (root_repo#32 -
+ * StrapiAnnotationAdapter merges/splits these per-locale server-side). A locale never written
+ * into contentByLocale (the editor never switched to it, or switched but never typed anything)
+ * is simply absent from the saved body - it is not re-saved as an empty translation.
  *
  * Journey membership (dbf:journey) and cross-map linking (dbf:linkedMap) are deliberately NOT
  * read or written here: those are relations managed from the Strapi backoffice, not from the
@@ -70,10 +86,11 @@ export const isValidPointTarget = (maeData) => {
  */
 export const applyPoiBodyConversion = (state) => {
   const stateToSave = state;
-  const { title, descriptionItems } = stateToSave.maeData;
+  const { contentByLocale } = stateToSave.maeData;
 
-  stateToSave.body = [
+  stateToSave.body = Object.entries(contentByLocale).flatMap(([language, { title, descriptionItems }]) => [
     {
+      language,
       purpose: 'identifying',
       type: DESCRIPTION_ITEM_TYPES.TEXT,
       value: isEmptyValue(title) ? getDefaultValue() : title,
@@ -81,9 +98,13 @@ export const applyPoiBodyConversion = (state) => {
     ...descriptionItems
       .filter((item) => !isEmptyValue(item.value))
       .map((item) => (item.type === DESCRIPTION_ITEM_TYPES.TEXT
-        ? { purpose: 'describing', type: DESCRIPTION_ITEM_TYPES.TEXT, value: item.value }
-        : { id: item.value, purpose: 'describing', type: item.type })),
-  ];
+        ? {
+          language, purpose: "describing", type: DESCRIPTION_ITEM_TYPES.TEXT, value: item.value
+        }
+        : {
+          id: item.value, language, purpose: "describing", type: item.type
+        })),
+  ]);
 
   return stateToSave;
 };
@@ -115,6 +136,8 @@ export default function POITemplate(
     windowId,
   },
 ) {
+  const { contentLocales = [] } = useSelector((state) => getConfig(state)).annotation ?? {};
+
   let maeAnnotation = annotation;
 
   if (!maeAnnotation.id) {
@@ -122,10 +145,9 @@ export default function POITemplate(
       body: [],
       'dbf:kind': 'POI',
       maeData: {
-        descriptionItems: [],
+        contentByLocale: {},
         target: null,
         templateType: TEMPLATE.POI_TYPE,
-        title: '',
       },
       motivation: 'identifying',
       target: null,
@@ -140,21 +162,36 @@ export default function POITemplate(
         currentShape: null,
       };
     }
-    maeAnnotation.maeData.title = maeAnnotation.body
-      .find((body) => body.purpose === 'identifying')?.value ?? '';
-    maeAnnotation.maeData.descriptionItems = maeAnnotation.body
-      .filter((body) => body.purpose === 'describing')
-      .map((body) => ({
-        key: uuidv4(),
-        type: body.type,
-        value: body.type === DESCRIPTION_ITEM_TYPES.TEXT ? body.value : body.id,
-      }));
+    // Group the saved body (one identifying + N describing items per language, see
+    // applyPoiBodyConversion) back into a per-locale map for the form to bind to.
+    const contentByLocale = {};
+    maeAnnotation.body.forEach((body) => {
+      const locale = body.language;
+      if (!locale) return;
+      const content = contentByLocale[locale] ?? { descriptionItems: [], title: "" };
+      if (body.purpose === "identifying") {
+        content.title = body.value ?? "";
+      } else if (body.purpose === "describing") {
+        content.descriptionItems.push({
+          key: uuidv4(),
+          type: body.type,
+          value: body.type === DESCRIPTION_ITEM_TYPES.TEXT ? body.value : body.id
+        });
+      }
+      contentByLocale[locale] = content;
+    });
+    maeAnnotation.maeData.contentByLocale = contentByLocale;
     // dbf:journey / dbf:linkedMap (if present) are intentionally left untouched on
     // maeAnnotation itself - not read into maeData, since there is no UI here to edit them.
   }
 
   const [annotationState, setAnnotationState] = useState(maeAnnotation);
   const [targetError, setTargetError] = useState(false);
+  const [activeLocale, setActiveLocale] = useState(
+    Object.keys(annotationState.maeData.contentByLocale)[0] ?? contentLocales[0]?.code
+  );
+
+  const activeLocaleContent = getLocaleContent(annotationState.maeData.contentByLocale, activeLocale);
 
   /** Update a top-level maeData field * */
   const updateMaeData = (patch) => {
@@ -172,38 +209,47 @@ export default function POITemplate(
     updateMaeData({ target });
   };
 
-  /** Add a new blank description item * */
-  const addDescriptionItem = () => {
+  /** Merge a patch into the active locale's title/descriptionItems * */
+  const updateActiveLocaleContent = (patch) => {
     updateMaeData({
+      contentByLocale: {
+        ...annotationState.maeData.contentByLocale,
+        [activeLocale]: { ...activeLocaleContent, ...patch }
+      }
+    });
+  };
+
+  /** Add a new blank description item to the active locale * */
+  const addDescriptionItem = () => {
+    updateActiveLocaleContent({
       descriptionItems: [
-        ...annotationState.maeData.descriptionItems,
+        ...activeLocaleContent.descriptionItems,
         { key: uuidv4(), type: DESCRIPTION_ITEM_TYPES.TEXT, value: '' },
       ],
     });
   };
 
-  /** Replace one description item * */
+  /** Replace one description item of the active locale * */
   const updateDescriptionItem = (index, newItem) => {
-    const items = [...annotationState.maeData.descriptionItems];
+    const items = [...activeLocaleContent.descriptionItems];
     items[index] = newItem;
-    updateMaeData({ descriptionItems: items });
+    updateActiveLocaleContent({ descriptionItems: items });
   };
 
-  /** Remove one description item * */
+  /** Remove one description item of the active locale * */
   const removeDescriptionItem = (index) => {
-    updateMaeData({
-      descriptionItems: annotationState.maeData.descriptionItems
-        .filter((_item, i) => i !== index),
+    updateActiveLocaleContent({
+      descriptionItems: activeLocaleContent.descriptionItems.filter((_item, i) => i !== index)
     });
   };
 
-  /** Move a description item up (-1) or down (+1) in display order * */
+  /** Move a description item up (-1) or down (+1) in display order, within the active locale * */
   const moveDescriptionItem = (index, delta) => {
-    const items = [...annotationState.maeData.descriptionItems];
+    const items = [...activeLocaleContent.descriptionItems];
     const targetIndex = index + delta;
     if (targetIndex < 0 || targetIndex >= items.length) return;
     [items[index], items[targetIndex]] = [items[targetIndex], items[index]];
-    updateMaeData({ descriptionItems: items });
+    updateActiveLocaleContent({ descriptionItems: items });
   };
 
   /** Save function * */
@@ -222,24 +268,43 @@ export default function POITemplate(
     saveAnnotation(annotationState);
   };
 
+  console.error("I'm here");
+
   return (
     <Grid container direction="column" spacing={2}>
       <Grid>
         <Typography variant="formSectionTitle">{t('poi')}</Typography>
       </Grid>
+      {contentLocales.length > 1 && (
+        <Grid>
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel id="poi-language-label">{t("poi_language")}</InputLabel>
+            <Select
+              labelId="poi-language-label"
+              label={t("poi_language")}
+              value={activeLocale ?? ""}
+              onChange={(event) => setActiveLocale(event.target.value)}
+            >
+              {contentLocales.map(({ code, name }) => (
+                <MenuItem key={code} value={code}>{name ?? code}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      )}
       <Grid>
         <TextField
           fullWidth
           label={t('poi_title')}
-          value={annotationState.maeData.title}
+          value={activeLocaleContent.title}
           variant="outlined"
-          onChange={(event) => updateMaeData({ title: event.target.value })}
+          onChange={(event) => updateActiveLocaleContent({ title: event.target.value })}
         />
       </Grid>
       <Grid>
         <Typography variant="formSectionTitle">{t('poi_description_section')}</Typography>
       </Grid>
-      {annotationState.maeData.descriptionItems.map((item, index) => (
+      {activeLocaleContent.descriptionItems.map((item, index) => (
         <Grid key={item.key} container spacing={1} alignItems="center">
           <Grid>
             <FormControl size="small" sx={{ minWidth: 130 }}>
@@ -296,7 +361,7 @@ export default function POITemplate(
             </IconButton>
             <IconButton
               aria-label={t('poi_move_description_item_down')}
-              disabled={index === annotationState.maeData.descriptionItems.length - 1}
+              disabled={index === activeLocaleContent.descriptionItems.length - 1}
               onClick={() => moveDescriptionItem(index, 1)}
             >
               <ArrowDownwardIcon fontSize="small" />
