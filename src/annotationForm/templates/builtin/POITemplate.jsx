@@ -215,7 +215,7 @@ export default function POITemplate(
       contentByLocale: {
         ...annotationState.maeData.contentByLocale,
         [activeLocale]: { ...activeLocaleContent, ...patch }
-      }
+      },
     });
   };
 
