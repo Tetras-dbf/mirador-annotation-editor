@@ -176,7 +176,9 @@ function AnnotationForm(
           annotationStateToBeSaved = registryEntry
             ? await registryEntry.convertToAnnotation(
               annotationProps,
-              { canvas, playerReferences, windowId },
+              {
+                canvas, playerReferences, windowId, manifestId: playerReferences.getManifestId(),
+              },
             )
             : await convertAnnotationStateToBeSaved(
               annotationProps,
