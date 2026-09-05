@@ -268,8 +268,6 @@ export default function POITemplate(
     saveAnnotation(annotationState);
   };
 
-  console.error("I'm here");
-
   return (
     <Grid container direction="column" spacing={2}>
       <Grid>
